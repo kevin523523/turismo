@@ -1,0 +1,5 @@
+1|Guía del Sahara|disponible|
+2|Guía del Caribe|disponible|
+3|Guía de Groenlandia|disponible|
+4|Guía de Noruega|reservado|2
+5|Guía de Japón|reservado|4
