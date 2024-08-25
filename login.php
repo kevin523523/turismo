@@ -1,5 +1,9 @@
 <?php
 session_start();
+// Configuración de cabeceras para CORS
+header('Access-Control-Allow-Origin: *'); // Permite solicitudes desde cualquier origen. En producción, reemplaza '*' con tu dominio.
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
 // Configuración de cabeceras
 header('Content-Type: application/json');

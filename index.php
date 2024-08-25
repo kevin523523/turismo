@@ -1,8 +1,25 @@
 <?php
 session_start();
+
+// Configuración de cabeceras para CORS
+header('Access-Control-Allow-Origin: *'); // Permite solicitudes desde cualquier origen. En producción, reemplaza '*' con tu dominio.
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Manejo de solicitudes OPTIONS (preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit;
+}
+
 header('Content-Type: application/json');
 
+// Manejo de solicitudes OPTIONS (preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit;
+}
+
 include 'reservations_functions.php';
+include 'sigIn.php';
 
 // Verifica que se haya solicitado una acción
 if (!isset($_GET['action'])) {
