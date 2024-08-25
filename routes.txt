@@ -1,0 +1,5 @@
+1|Sahara|disponible|
+2|Caribe|disponible|
+3|Groenlandia|disponible|
+4|Noruega|disponible|
+5|Japón|disponible|

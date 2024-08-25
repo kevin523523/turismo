@@ -1,53 +1,114 @@
 <?php
-function getAvailableGuides() {
-    $guides = [];
-    $lines = file('guides.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+header('Content-Type: application/json');
+
+// Función para leer el archivo de rutas
+function readRoutes() {
+    $file = 'routes.txt';
+    $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $routes = [];
+
     foreach ($lines as $line) {
-        list($id, $name, $status, $userId) = explode('|', trim($line));
-        if ($status === 'disponible') {
-            $guides[] = [$id, $name];
-        }
+        list($id, $name, $status, $reservations) = explode('|', trim($line));
+        $routes[] = [
+            'id' => $id,
+            'name' => $name,
+            'status' => $status,
+            'reservations' => $reservations ? explode(',', $reservations) : []
+        ];
     }
-    return $guides;
+
+    return $routes;
 }
 
-function reserveService($guideId, $userId) {
-    $lines = file('guides.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $newLines = [];
-    foreach ($lines as $line) {
-        list($id, $name, $status, $currentUserId) = explode('|', trim($line));
-        if ($id == $guideId) {
-            $newLines[] = "$id|$name|reservado|$userId";
-        } else {
-            $newLines[] = $line;
-        }
+// Función para guardar los cambios en el archivo de rutas
+function saveRoutes($routes) {
+    $file = 'routes.txt';
+    $lines = [];
+
+    foreach ($routes as $route) {
+        $reservations = implode(',', $route['reservations']);
+        $lines[] = "{$route['id']}|{$route['name']}|{$route['status']}|{$reservations}";
     }
-    file_put_contents('guides.txt', implode("\n", $newLines));
+
+    file_put_contents($file, implode(PHP_EOL, $lines));
 }
 
-function getReservations($userId) {
-    $reservations = [];
-    $lines = file('guides.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        list($id, $name, $status, $currentUserId) = explode('|', trim($line));
-        if ($status === 'reservado' && $currentUserId == $userId) {
-            $reservations[] = "$name reservado por Usuario $userId";
-        }
-    }
-    return $reservations;
+// Función para mostrar las rutas disponibles
+function showAvailableRoutes() {
+    $routes = readRoutes();
+    $available_routes = array_filter($routes, function($route) {
+        return $route['status'] === 'disponible';
+    });
+
+    echo json_encode([
+        'status' => 'success',
+        'routes' => $available_routes
+    ]);
 }
 
-function cancelReservation($guideId, $userId) {
-    $lines = file('guides.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $newLines = [];
-    foreach ($lines as $line) {
-        list($id, $name, $status, $currentUserId) = explode('|', trim($line));
-        if ($id == $guideId && $status === 'reservado' && $currentUserId == $userId) {
-            $newLines[] = "$id|$name|disponible|";
-        } else {
-            $newLines[] = $line;
+// Función para reservar una ruta
+function reserveRoute($route_id, $user_id) {
+    $routes = readRoutes();
+    $route_found = false;
+
+    foreach ($routes as &$route) {
+        if ($route['id'] == $route_id) {
+            if ($route['status'] === 'reservado') {
+                if (in_array($user_id, $route['reservations'])) {
+                    echo json_encode(['status' => 'error', 'message' => 'Ya has reservado esta ruta']);
+                    return;
+                }
+
+                if (count($route['reservations']) >= 3) { // Ejemplo de límite de reservas
+                    echo json_encode(['status' => 'error', 'message' => 'Límite de reservas alcanzado']);
+                    return;
+                }
+            }
+
+            $route['status'] = 'reservado';
+            $route['reservations'][] = $user_id;
+            $route_found = true;
+            break;
         }
     }
-    file_put_contents('guides.txt', implode("\n", $newLines));
+
+    if ($route_found) {
+        saveRoutes($routes);
+        echo json_encode(['status' => 'success', 'message' => 'Ruta reservada correctamente']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Ruta no encontrada']);
+    }
+}
+
+// Función para cancelar una reserva
+function cancelReservation($route_id, $user_id) {
+    $routes = readRoutes();
+    $route_found = false;
+
+    foreach ($routes as &$route) {
+        if ($route['id'] == $route_id) {
+            if ($route['status'] === 'reservado') {
+                if (!in_array($user_id, $route['reservations'])) {
+                    echo json_encode(['status' => 'error', 'message' => 'No tienes una reserva para esta ruta']);
+                    return;
+                }
+
+                $route['reservations'] = array_diff($route['reservations'], [$user_id]);
+                if (empty($route['reservations'])) {
+                    $route['status'] = 'disponible';
+                }
+            }
+
+            $route_found = true;
+            break;
+        }
+    }
+
+    if ($route_found) {
+        saveRoutes($routes);
+        echo json_encode(['status' => 'success', 'message' => 'Reserva cancelada correctamente']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Ruta no encontrada']);
+    }
 }
 ?>
