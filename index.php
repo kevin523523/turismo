@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 include 'reservations_functions.php';
-include 'sigIn.php';
+
 
 // Verifica que se haya solicitado una acción
 if (!isset($_GET['action'])) {
@@ -55,7 +55,7 @@ switch ($action) {
             echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción']);
             exit();
         }
-        showAvailableRoutes();
+        showAvailableRoutes($user_id);
         break;
 
     case 'reserve':
