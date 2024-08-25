@@ -1,15 +1,16 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['user'])) {
+    header('Location: signIn.php');
+    exit();
+}
+$userId = $_SESSION['user'];
+
+
 include 'reservations_functions.php';
 include 'funciones_clima.php';
 include 'calificacion_testimonios.php';
-
-//if (!isset($_SESSION['userId'])) {
-//    header('Location: login_register.php');
-//    exit();
-//}
-
-//$userId = $_SESSION['userId'];
 
 
 $ciudades = obtener_ciudades_disponibles();
@@ -27,11 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $error = 'Ya tienes una reserva activa.';
         }
-    } elseif (isset($_POST['logout'])) {
-        session_destroy();
-        header('Location: login_register.php');
+    }elseif (isset($_POST['logout'])) {
+        header('Location: logout.php');
         exit();
-    } elseif (isset($_POST['ciudad'])) {
+    }elseif (isset($_POST['ciudad'])) {
         $ciudad_seleccionada = $_POST['ciudad'];
         $datos_climaticos = obtener_datos_climaticos($ciudad_seleccionada);
     } elseif (isset($_POST['show_ratings']) && isset($_POST['guideId'])) {
