@@ -51,32 +51,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Llama a la función correspondiente según la acción solicitada
 switch ($action) {
     case 'show_available':
-
         showAvailableRoutes($user_id);
         break;
 
-
     case 'reserve':
-        $session_status = checkSession($user_id);
-        if (!$session_status['authenticated']) {
-            echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción']);
-            exit();
-        }
-        if (isset($_POST['route_id'])) {
-            reserveRoute($_POST['route_id'], $user_id);
+        if (isset($_GET['route_id'])) {
+            reserveRoute($_GET['route_id'], $_GET['user_id']);
         } else {
+            $error = 'Ya tienes una reserva activa.';
             echo json_encode(['status' => 'error', 'message' => 'ID de ruta no especificado']);
         }
         break;
 
     case 'cancel':
-        $session_status = checkSession($user_id);
-        if (!$session_status['authenticated']) {
-            echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción']);
-            exit();
-        }
-        if (isset($_POST['route_id'])) {
-            cancelReservation($_POST['route_id'], $user_id);
+        if (isset($_GET['route_id'])) {
+            cancelReservation($_GET['route_id'],  $_GET['user_id']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'ID de ruta no especificado']);
         }
