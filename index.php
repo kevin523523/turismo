@@ -87,6 +87,31 @@ switch ($action) {
         echo json_encode($session_status);
         break;
 
+    case 'obtenerCiudad':
+        $session_status = checkSession($user_id);
+        if (!$session_status['authenticated']) {
+            echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción']);
+            exit();
+        }
+        $ciudades = obtener_ciudades_disponibles();
+        echo json_encode($ciudades);
+        break;
+
+    case 'climaCiudad':
+        $session_status = checkSession($user_id);
+        if (!$session_status['authenticated']) {
+            echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción']);
+            exit();
+        }
+        if (isset($_GET['ciudad'])) {
+            $ciudad = $_GET['ciudad'];
+            $datos_climaticos = obtener_datos_climaticos($ciudad);
+            echo json_encode($datos_climaticos);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Ciudad no especificada']);
+        }
+        break;
+
     default:
         echo json_encode(['status' => 'error', 'message' => 'Acción no válida']);
         break;

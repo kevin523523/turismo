@@ -9,12 +9,13 @@ function obtener_datos_climaticos($ciudad) {
         while (($linea = fgets($file)) !== false) {
             $datos = explode(',', trim($linea));
             if (strtolower($datos[0]) === strtolower($ciudad)) {
-                $datos_climaticos[] = [
+                $datos_climaticos= [
                     'fecha' => $datos[1],
                     'temperatura' => $datos[2],
                     'humedad' => $datos[3],
                     'viento' => $datos[4],
                 ];
+                break;
             }
         }
 
@@ -45,4 +46,3 @@ function obtener_ciudades_disponibles() {
 
     return $ciudades;
 }
-?>
