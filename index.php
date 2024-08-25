@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = isset($data['user_id']) ? intval($data['user_id']) : null; // Obtener el ID del usuario del cuerpo de la solicitud
 }
 
-// Llama a la función correspondiente según la acción solicitada
+
 switch ($action) {
     case 'show_available':
         showAvailableRoutes($user_id);
