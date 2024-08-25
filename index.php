@@ -2,24 +2,17 @@
 session_start();
 
 // Configuración de cabeceras para CORS
-header('Access-Control-Allow-Origin: *'); // Permite solicitudes desde cualquier origen. En producción, reemplaza '*' con tu dominio.
+header('Access-Control-Allow-Origin: *'); 
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Manejo de solicitudes OPTIONS (preflight)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
 header('Content-Type: application/json');
 
-// Manejo de solicitudes OPTIONS (preflight)
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit;
-}
-
 include 'reservations_functions.php';
-
 
 // Verifica que se haya solicitado una acción
 if (!isset($_GET['action'])) {
@@ -28,8 +21,8 @@ if (!isset($_GET['action'])) {
 }
 
 $action = $_GET['action'];
-$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : null; // Obtener el ID del usuario de la consulta
 
+// Función para verificar el estado de la sesión
 // Función para verificar el estado de la sesión
 function checkSession($user_id) {
     if ($user_id && isset($_SESSION['user']) && $_SESSION['user'] == $user_id) {
@@ -40,23 +33,28 @@ function checkSession($user_id) {
         ];
     } else {
         return [
-            'status' => 'success',
+            'status' => 'error',
             'authenticated' => false,
             'user_id' => null
         ];
     }
 }
 
+$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : null; // Obtener el ID del usuario de la consulta
+
+// Manejo de las solicitudes POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $user_id = isset($data['user_id']) ? intval($data['user_id']) : null; // Obtener el ID del usuario del cuerpo de la solicitud
+}
+
 // Llama a la función correspondiente según la acción solicitada
 switch ($action) {
     case 'show_available':
-        $session_status = checkSession($user_id);
-        if (!$session_status['authenticated']) {
-            echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción']);
-            exit();
-        }
+
         showAvailableRoutes($user_id);
         break;
+
 
     case 'reserve':
         $session_status = checkSession($user_id);
@@ -64,8 +62,8 @@ switch ($action) {
             echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción']);
             exit();
         }
-        if (isset($_GET['route_id'])) {
-            reserveRoute($_GET['route_id'], $user_id);
+        if (isset($_POST['route_id'])) {
+            reserveRoute($_POST['route_id'], $user_id);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'ID de ruta no especificado']);
         }
@@ -77,8 +75,8 @@ switch ($action) {
             echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción']);
             exit();
         }
-        if (isset($_GET['route_id'])) {
-            cancelReservation($_GET['route_id'], $user_id);
+        if (isset($_POST['route_id'])) {
+            cancelReservation($_POST['route_id'], $user_id);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'ID de ruta no especificado']);
         }
