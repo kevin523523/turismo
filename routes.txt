@@ -1,4 +1,4 @@
-1|Sahara|https://hips.hearstapps.com/hmg-prod/images/dunes-in-the-sahara-desert-merzouga-morocco-royalty-free-image-1695321159.jpg|disponible|3|
+1|Sahara|https://hips.hearstapps.com/hmg-prod/images/dunes-in-the-sahara-desert-merzouga-morocco-royalty-free-image-1695321159.jpg|disponible|2|5
 2|Caribe|https://miro.medium.com/v2/resize:fit:3200/1*YO5yJgwx4kHUu_RlF8I-kQ.jpeg|disponible|3|
 3|Groenlandia|https://imagenes.20minutos.es/files/image_1920_1080/uploads/imagenes/2022/08/19/fotografia-de-nuuk-la-capital-de-groenlandia.jpeg|disponible|3|
 4|Noruega|https://viajes.nationalgeographic.com.es/medio/2019/03/21/hamnoy_b2afcab8_800x800.jpg|disponible|2|

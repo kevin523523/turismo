@@ -24,7 +24,7 @@ if (!isset($_GET['action'])) {
 $action = $_GET['action'];
 
 // Función para verificar el estado de la sesión
-// Función para verificar el estado de la sesión
+
 function checkSession($user_id) {
     if ($user_id && isset($_SESSION['user']) && $_SESSION['user'] == $user_id) {
         return [
@@ -91,6 +91,22 @@ switch ($action) {
             echo json_encode(['status' => 'error', 'message' => 'Ciudad no especificada']);
         }
         break;
+
+    case 'ciudadesPorActividad':
+    if (isset($_GET['actividad'])) {
+        $actividad = $_GET['actividad'];
+        $ciudades = ciudadesPorActividad($actividad);
+
+        if (!empty($ciudades)) {
+            echo "{ \"" . implode('", "', $ciudades) . "\" }";
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'No se encontraron ciudades para esta actividad']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Actividad no especificada']);
+    }
+    break;
+
 
     default:
         echo json_encode(['status' => 'error', 'message' => 'Acción no válida']);

@@ -46,3 +46,25 @@ function obtener_ciudades_disponibles() {
 
     return $ciudades;
 }
+
+function ciudadesPorActividad($actividad) {
+    $archivo = 'condiciones_climaticas.txt';
+    $ciudades = [];
+
+    if (file_exists($archivo)) {
+        $file = fopen($archivo, "r");
+
+        while (($linea = fgets($file)) !== false) {
+            $datos = explode(',', trim($linea));
+            if (strtolower($datos[5]) === strtolower($actividad)) {
+                $ciudades[] = $datos[0];
+            }
+        }
+        fclose($file);
+    }
+
+    return $ciudades;
+}
+
+
+?>
