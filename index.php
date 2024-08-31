@@ -14,6 +14,7 @@ header('Content-Type: application/json');
 
 include 'reservations_functions.php';
 include 'funciones_clima.php';
+include 'actividades_functions.php';
 
 // Verifica que se haya solicitado una acción
 if (!isset($_GET['action'])) {
@@ -93,19 +94,25 @@ switch ($action) {
         break;
 
     case 'ciudadesPorActividad':
-    if (isset($_GET['actividad'])) {
-        $actividad = $_GET['actividad'];
-        $ciudades = ciudadesPorActividad($actividad);
-
-        if (!empty($ciudades)) {
-            echo "{ \"" . implode('", "', $ciudades) . "\" }";
+        if (isset($_GET['actividad'])) {
+            $actividad = $_GET['actividad'];
+            $ciudades = ciudadesPorActividad($actividad);
+            echo json_encode($ciudades);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'No se encontraron ciudades para esta actividad']);
         }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Actividad no especificada']);
-    }
+    
     break;
+
+    case 'fotoCiudad':
+        if (isset($_GET['ciudad'])) {
+            $ciudad = $_GET['ciudad'];
+            $foto = getFotoCiudad($ciudad);
+            echo json_encode($foto);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Ciudad no especificada']);
+        }
+        break;
 
 
     default:

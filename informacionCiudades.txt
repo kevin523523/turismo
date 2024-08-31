@@ -1,0 +1,7 @@
+Guayaquil,2024-08-02,30,79,14,Tour en barco,https://www.eluniverso.com/resizer/v2/QF7KWM37OVCQ7B7JLNMNIH2RW4.jpg?auth=191ef798babd8ea18a1c0d7130e23827af8bc32772f9b877431901772af207ae&width=1280&height=942&quality=75&smart=true
+Cuenca,2024-08-01,17,72,5,Tour cultural,https://www.turibus.com.ec/images2/tour-diario-cuenca-sur.jpg
+Merzouga,2024-08-02,47,10,20,Excursion en camello,https://cameltripssahara.com/wp-content/uploads/2021/07/overnight-camel-trekking-merzouga-3.jpg
+Punta Cana,2024-08-01,33,83,27,Snorkel en arrecife,https://www.puntacanaadventures.ca/wp-content/uploads/2022/09/Snorkeling-the-Wall-at-Calina-Island.webp
+Nuuk,2024-08-02,-5,90,9,Avistamiento de auroras,https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/76/a6/b9/caption.jpg?w=1200&h=-1&s=1
+Bergen,2024-08-01,21,78,15,Tour en tren,https://media.traveler.es/photos/61376ab33decec3303bab9a0/master/w_1600%2Cc_limit/153730.jpg
+Kyoto,2024-08-02,30,70,9,Visita a templos,https://www.edreams.es/blog/wp-content/uploads/sites/5/2018/08/Puerta-Santuario-Yasaka.jpg

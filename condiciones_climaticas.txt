@@ -1,7 +1,0 @@
-Guayaquil,2024-08-02,30,79,14,tour en barco
-Cuenca,2024-08-01,17,72,5,tour cultural
-Merzouga,2024-08-02,47,10,20,excursion en camello
-Punta Cana,2024-08-01,33,83,27,snorkel en arrecife
-Nuuk,2024-08-02,-5,90,9,avistamiento de auroras
-Bergen,2024-08-01,21,78,15,tour en tren
-Kyoto,2024-08-02,30,70,9,visita a templos
