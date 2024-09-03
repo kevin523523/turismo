@@ -49,6 +49,22 @@ function showAvailableRoutes($user_id) {
     ]);
 }
 
+function showAvailableReservations($user_id) {
+    $routes = readRoutes();
+    $available_routes = [];
+
+    foreach ($routes as $id => $route) {
+        if (in_array($user_id, $route['reserved_users'])) {
+            $available_routes[$id] = $route;
+        }
+    }
+
+    echo json_encode([
+        'status' => 'success',
+        'routes_reservations' => $available_routes
+    ]);
+}
+
 function reserveRoute($route_id, $user_id) {
     $routes = readRoutes();
 

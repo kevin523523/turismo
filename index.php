@@ -56,6 +56,10 @@ switch ($action) {
         showAvailableRoutes($user_id);
         break;
 
+    case 'show_available_reservations':
+        showAvailableReservations($user_id);
+        break;
+
     case 'reserve':
         if (isset($_GET['route_id'])) {
             reserveRoute($_GET['route_id'], $_GET['user_id']);
