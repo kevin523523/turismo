@@ -15,6 +15,7 @@ header('Content-Type: application/json');
 include 'reservations_functions.php';
 include 'funciones_clima.php';
 include 'actividades_functions.php';
+include 'guias_functions.php';
 
 // Verifica que se haya solicitado una acción
 if (!isset($_GET['action'])) {
@@ -25,7 +26,6 @@ if (!isset($_GET['action'])) {
 $action = $_GET['action'];
 
 // Función para verificar el estado de la sesión
-
 function checkSession($user_id) {
     if ($user_id && isset($_SESSION['user']) && $_SESSION['user'] == $user_id) {
         return [
@@ -50,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = isset($data['user_id']) ? intval($data['user_id']) : null; // Obtener el ID del usuario del cuerpo de la solicitud
 }
 
-
 switch ($action) {
+    // Funciones relacionadas con rutas 
     case 'show_available':
         showAvailableRoutes($user_id);
         break;
@@ -64,16 +64,36 @@ switch ($action) {
         if (isset($_GET['route_id'])) {
             reserveRoute($_GET['route_id'], $_GET['user_id']);
         } else {
-            $error = 'Ya tienes una reserva activa.';
             echo json_encode(['status' => 'error', 'message' => 'ID de ruta no especificado']);
         }
         break;
 
     case 'cancel':
         if (isset($_GET['route_id'])) {
-            cancelReservation($_GET['route_id'],  $_GET['user_id']);
+            cancelReservation($_GET['route_id'], $_GET['user_id']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'ID de ruta no especificado']);
+        }
+        break;
+
+    // Funciones relacionadas con guías
+    case 'show_available_guides':
+        showAvailableGuides();
+        break;
+
+    case 'reserve_guide':
+        if (isset($_GET['guide_index'])) {
+            reserveGuide($_GET['guide_index']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Índice de guía no especificado']);
+        }
+        break;
+
+    case 'cancel_guide_reservation':
+        if (isset($_GET['guide_index'])) {
+            cancelReservation($_GET['guide_index']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Índice de guía no especificado']);
         }
         break;
 
@@ -81,7 +101,8 @@ switch ($action) {
         $session_status = checkSession($user_id);
         echo json_encode($session_status);
         break;
-
+    
+    // Funciones relacionadas con ciudades
     case 'obtenerCiudad':
         $ciudades = obtener_ciudades_disponibles();
         echo json_encode($ciudades);
@@ -105,8 +126,7 @@ switch ($action) {
         } else {
             echo json_encode(['status' => 'error', 'message' => 'No se encontraron ciudades para esta actividad']);
         }
-    
-    break;
+        break;
 
     case 'fotoCiudad':
         if (isset($_GET['ciudad'])) {
@@ -117,7 +137,6 @@ switch ($action) {
             echo json_encode(['status' => 'error', 'message' => 'Ciudad no especificada']);
         }
         break;
-
 
     default:
         echo json_encode(['status' => 'error', 'message' => 'Acción no válida']);
