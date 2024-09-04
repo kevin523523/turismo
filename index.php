@@ -80,20 +80,24 @@ switch ($action) {
     case 'show_available_guides':
         showAvailableGuides($user_id);
         break;
+    
+    case 'show_available_reservations_guides':
+        showAvailableReservationsGuides($user_id);
+        break;
 
     case 'reserve_guide':
-        if (isset($_GET['guide_index'])) {
-            reserveGuide($_GET['guide_index']);
+        if (isset($_GET['guide_id'])) {
+            reserveGuide($_GET['guide_id']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Índice de guía no especificado']);
+            echo json_encode(['status' => 'error', 'message' => 'Identidicador de guia no especificado']);
         }
         break;
 
     case 'cancel_guide_reservation':
-        if (isset($_GET['guide_index'])) {
-            cancelReservation($_GET['guide_index']);
+        if (isset($_GET['guide_id'])) {
+            cancelReservationGuide($_GET['guide_id']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Índice de guía no especificado']);
+            echo json_encode(['status' => 'error', 'message' => 'Identidicador de guia no especificado']);
         }
         break;
 
