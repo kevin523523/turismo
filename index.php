@@ -95,7 +95,7 @@ switch ($action) {
 
     case 'cancel_guide_reservation':
         if (isset($_GET['guide_id'])) {
-            cancelReservationGuide($_GET['guide_id']);
+            cancelReservationGuides($_GET['guide_id']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Identidicador de guia no especificado']);
         }
