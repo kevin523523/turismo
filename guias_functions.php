@@ -1,48 +1,96 @@
 <?php
+header('Content-Type: application/json');
 
-function obtener_calificacion_general($guideId) {
-    $calificaciones = [];
-    $lineas = file('calificaciones.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lineas as $linea) {
-        list($id, $calificacion, $comentario) = explode('|', trim($linea));
-        if ($id == $guideId) {
-            $calificaciones[] = $calificacion;
+function readGuides() {
+    $file = 'guias.txt';
+    $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $guides = [];
+
+    foreach ($lines as $index => $line) {
+        list($name, $image_url, $availability, $max_reservations, $rating, $comment) = explode('|', trim($line));
+        $guides[$index] = [
+            'name' => $name,
+            'image_url' => $image_url,
+            'availability' => $availability,
+            'max_reservations' => intval($max_reservations),
+            'rating' => intval($rating),
+            'comment' => $comment,
+        ];
+    }
+
+    return $guides;
+}
+
+function saveGuides($guides) {
+    $file = 'guias.txt';
+    $lines = [];
+
+    foreach ($guides as $guide) {
+        $lines[] = "{$guide['name']}|{$guide['image_url']}|{$guide['availability']}|{$guide['max_reservations']}|{$guide['rating']}|{$guide['comment']}";
+    }
+
+    file_put_contents($file, implode(PHP_EOL, $lines));
+}
+
+function showAvailableGuides() {
+    $guides = readGuides();
+    $available_guides = [];
+
+    foreach ($guides as $index => $guide) {
+        if ($guide['availability'] === 'Disponible' && $guide['max_reservations'] > 0) {
+            $available_guides[$index] = $guide;
         }
     }
-    if (count($calificaciones) > 0) {
-        return round(array_sum($calificaciones) / count($calificaciones), 1);
-    } else {
-        return "Sin calificación";
+
+    echo json_encode([
+        'status' => 'success',
+        'guides' => $available_guides
+    ]);
+}
+
+function reserveGuide($guide_index) {
+    $guides = readGuides();
+
+    if (!isset($guides[$guide_index])) {
+        echo json_encode(['status' => 'error', 'message' => 'Guía no encontrado']);
+        return;
     }
-}
 
-function obtener_testimonios($guideId) {
-    $testimonios = [];
-    $lineas = file('calificaciones.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lineas as $linea) {
-        list($id, $calificacion, $comentario) = explode('|', trim($linea));
-        if ($id == $guideId && !empty($comentario)) {
-            $testimonios[] = $comentario;
-        }
+    $guide = &$guides[$guide_index];
+
+    if ($guide['availability'] !== 'Disponible' || $guide['max_reservations'] <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Guía no disponible o reservas completas']);
+        return;
     }
-    return $testimonios;
-}
 
-function agregar_calificacion_testimonio($guideId, $calificacion, $comentario) {
-    $linea = $guideId . '|' . $calificacion . '|' . trim($comentario) . "\n";
-    file_put_contents('calificaciones.txt', $linea, FILE_APPEND);
-}
+    $guide['max_reservations'] -= 1;
 
-function eliminar_testimonio($guideId, $comentario) {
-    $lineas = file('calificaciones.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $nuevasLineas = [];
-    foreach ($lineas as $linea) {
-        list($id, $calificacion, $lineaComentario) = explode('|', trim($linea));
-        if (!($id == $guideId && trim($lineaComentario) == trim($comentario))) {
-            $nuevasLineas[] = $linea;
-        }
+    if ($guide['max_reservations'] == 0) {
+        $guide['availability'] = 'No Disponible';
     }
-    file_put_contents('calificaciones.txt', implode("\n", $nuevasLineas));
+
+    saveGuides($guides);
+    echo json_encode(['status' => 'success', 'message' => 'Guía reservado correctamente']);
 }
 
+function cancelReservation($guide_index) {
+    $guides = readGuides();
+
+    if (!isset($guides[$guide_index])) {
+        echo json_encode(['status' => 'error', 'message' => 'Guía no encontrado']);
+        return;
+    }
+
+    $guide = &$guides[$guide_index];
+
+    if ($guide['availability'] === 'No Disponible') {
+        $guide['availability'] = 'Disponible';
+    }
+
+    $guide['max_reservations'] += 1;
+    
+    saveGuides($guides);
+    echo json_encode(['status' => 'success', 'message' => 'Reserva cancelada correctamente']);
+}
 ?>
+
