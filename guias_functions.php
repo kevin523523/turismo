@@ -33,7 +33,7 @@ function saveGuides($guides) {
 }
 
 function showAvailableGuides($user_id) {
-    $guides = readGuides();  // Asumiendo que 'readGuides' es una función que lee el archivo de guías
+    $guides = readGuides();
     $available_guides = [];
 
     foreach ($guides as $id => $guide) {
