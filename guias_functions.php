@@ -28,7 +28,7 @@ function saveGuides($guides) {
     $lines = [];
 
     foreach ($guides as $guide) {
-        $lines[] = "{$guide['id']}|$guide['name']}|{$guide['image_url']}|{$guide['availability']}|{$guide['max_reservations']}|{$guide['rating']}|{$guide['comment']}|{$reserved_users}";
+        $lines[] = "{$guide['id']}|{$guide['name']}|{$guide['image_url']}|{$guide['availability']}|{$guide['max_reservations']}|{$guide['rating']}|{$guide['comment']}|{$reserved_users}";
     }
 
     file_put_contents($file, implode(PHP_EOL, $lines));
