@@ -7,14 +7,16 @@ function readGuides() {
     $guides = [];
 
     foreach ($lines as $index => $line) {
-        list($name, $image_url, $availability, $max_reservations, $rating, $comment) = explode('|', trim($line));
-        $guides[$index] = [
+        list($id, $name, $image_url, $availability, $max_reservations, $rating, $comment, $reserved_users) = explode('|', trim($line));
+        $guides[$id] = [
+            'id' => $id,
             'name' => $name,
             'image_url' => $image_url,
             'availability' => $availability,
             'max_reservations' => intval($max_reservations),
             'rating' => intval($rating),
             'comment' => $comment,
+            'reserved_users' => $reserved_users ? explode(',', $reserved_users) : []
         ];
     }
 
@@ -26,7 +28,7 @@ function saveGuides($guides) {
     $lines = [];
 
     foreach ($guides as $guide) {
-        $lines[] = "{$guide['name']}|{$guide['image_url']}|{$guide['availability']}|{$guide['max_reservations']}|{$guide['rating']}|{$guide['comment']}";
+        $lines[] = "{$guide['id']}|$guide['name']}|{$guide['image_url']}|{$guide['availability']}|{$guide['max_reservations']}|{$guide['rating']}|{$guide['comment']}|{$reserved_users}";
     }
 
     file_put_contents($file, implode(PHP_EOL, $lines));
@@ -37,7 +39,7 @@ function showAvailableGuides($user_id) {
     $available_guides = [];
 
     foreach ($guides as $id => $guide) {
-        if ($guide['status'] === 'Disponible') {
+        if ($guide['status'] === 'Disponible' || !in_array($user_id, $guide['reserved_users'])) {
             $available_guides[$id] = $guide;
         }
     }
@@ -48,22 +50,49 @@ function showAvailableGuides($user_id) {
     ]);
 }
 
-function reserveGuide($guide_index) {
+function showAvailableReservationsGuides($user_id) {
+    $guides = readGuides();
+    $available_guides = [];
+
+    foreach ($guides as $id => $guide) {
+        if (in_array($user_id, $guide['reserved_users'])) {
+            $available_guides[$id] = $guide;
+        }
+    }
+
+    echo json_encode([
+        'status' => 'success',
+        'guides' => $available_guides
+    ]);
+}
+
+function reserveGuide($guide_id, $user_id) {
     $guides = readGuides();
 
-    if (!isset($guides[$guide_index])) {
-        echo json_encode(['status' => 'error', 'message' => 'Guía no encontrado']);
+    if (!isset($guides[$guide_id])) {
+        echo json_encode(['status' => 'error', 'message' => 'Guia no encontrado']);
         return;
     }
 
-    $guide = &$guides[$guide_index];
+    $guide = &$guides[$guide_id];
 
     if ($guide['availability'] !== 'Disponible' || $guide['max_reservations'] <= 0) {
-        echo json_encode(['status' => 'error', 'message' => 'Guía no disponible o reservas completas']);
+        echo json_encode(['status' => 'error', 'message' => 'Guia no disponible o reservas completas']);
+        return;
+    }
+    
+    if (in_array($user_id, $guide['reserved_users'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Ya has reservado este guia']);
         return;
     }
 
-    $guide['max_reservations'] -= 1;
+    if (count($guide['reserved_users']) >= $guide['max_reservations']) {
+        echo json_encode(['status' => 'error', 'message' => 'Límite de reservas alcanzado']);
+        return;
+    }
+
+    $guide['reserved_users'][] = $user_id;
+    $guide['max_reservations'] = $guide['max_reservations'] - 1;
 
     if ($guide['max_reservations'] == 0) {
         $guide['availability'] = 'No Disponible';
@@ -73,21 +102,27 @@ function reserveGuide($guide_index) {
     echo json_encode(['status' => 'success', 'message' => 'Guía reservado correctamente']);
 }
 
-function cancelReservation($guide_index) {
+function cancelReservationGuides($guide_id, $user_id) {
     $guides = readGuides();
 
-    if (!isset($guides[$guide_index])) {
-        echo json_encode(['status' => 'error', 'message' => 'Guía no encontrado']);
+    if (!isset($guides[$guide_id])) {
+        echo json_encode(['status' => 'error', 'message' => 'Guia no encontrado']);
         return;
     }
 
-    $guide = &$guides[$guide_index];
+    $guide = &$guides[$guide_id];
 
-    if ($guide['availability'] === 'No Disponible') {
-        $guide['availability'] = 'Disponible';
+    if (!in_array($user_id, $guide['reserved_users'])) {
+        echo json_encode(['status' => 'error', 'message' => 'No tienes una reserva para este guia']);
+        return;
     }
 
-    $guide['max_reservations'] += 1;
+    $guide['reserved_users'] = array_diff($guide['reserved_users'], [$user_id]);
+    $guide['max_reservations'] = $guide['max_reservations'] + 1;
+
+    if (!empty($guide['reserved_users'])) {
+        $guide['availability'] = 'Disponible';
+    }
     
     saveGuides($guides);
     echo json_encode(['status' => 'success', 'message' => 'Reserva cancelada correctamente']);
