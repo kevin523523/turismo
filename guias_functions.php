@@ -32,13 +32,13 @@ function saveGuides($guides) {
     file_put_contents($file, implode(PHP_EOL, $lines));
 }
 
-function showAvailableGuides() {
-    $guides = readGuides();
+function showAvailableGuides($user_id) {
+    $guides = readGuides();  // Asumiendo que 'readGuides' es una función que lee el archivo de guías
     $available_guides = [];
 
-    foreach ($guides as $index => $guide) {
-        if ($guide['availability'] === 'Disponible' && $guide['max_reservations'] > 0) {
-            $available_guides[$index] = $guide;
+    foreach ($guides as $id => $guide) {
+        if ($guide['status'] === 'Disponible') {
+            $available_guides[$id] = $guide;
         }
     }
 
