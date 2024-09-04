@@ -39,7 +39,7 @@ function showAvailableGuides($user_id) {
     $available_guides = [];
 
     foreach ($guides as $id => $guide) {
-        if ($guide['status'] === 'Disponible' || !in_array($user_id, $guide['reserved_users'])) {
+        if ($guide['availability'] === 'Disponible' || !in_array($user_id, $guide['reserved_users'])) {
             $available_guides[$id] = $guide;
         }
     }
