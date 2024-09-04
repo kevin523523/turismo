@@ -87,7 +87,7 @@ switch ($action) {
 
     case 'reserve_guide':
         if (isset($_GET['guide_id'])) {
-            reserveGuide($_GET['guide_id']);
+            reserveGuide($_GET['guide_id'], $_GET['user_id']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Identidicador de guia no especificado']);
         }
@@ -95,7 +95,7 @@ switch ($action) {
 
     case 'cancel_guide_reservation':
         if (isset($_GET['guide_id'])) {
-            cancelReservationGuides($_GET['guide_id']);
+            cancelReservationGuides($_GET['guide_id'], $_GET['user_id']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Identidicador de guia no especificado']);
         }
