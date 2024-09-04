@@ -78,7 +78,7 @@ switch ($action) {
 
     // Funciones relacionadas con guías
     case 'show_available_guides':
-        showAvailableGuides();
+        showAvailableGuides($user_id);
         break;
 
     case 'reserve_guide':
